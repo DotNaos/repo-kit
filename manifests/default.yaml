@@ -4,3 +4,11 @@ files:
     target: .github/workflows/ci.yml
   - source: templates/CODEOWNERS
     target: .github/CODEOWNERS
+  - source: .github/skills/mobile-expo-codespaces/SKILL.md
+    target: .github/skills/mobile-expo-codespaces/SKILL.md
+  - source: .github/skills/mobile-expo-codespaces/scripts/doctor.sh
+    target: .github/skills/mobile-expo-codespaces/scripts/doctor.sh
+  - source: .github/skills/mobile-expo-codespaces/scripts/start-tunnel.sh
+    target: .github/skills/mobile-expo-codespaces/scripts/start-tunnel.sh
+  - source: .github/skills/mobile-expo-codespaces/references/eas-build-github-actions.md
+    target: .github/skills/mobile-expo-codespaces/references/eas-build-github-actions.md
