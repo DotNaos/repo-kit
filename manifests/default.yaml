@@ -14,3 +14,7 @@ files:
     target: .github/skills/mobile-expo-codespaces/references/pipelines/eas-build.yml.j2
   - source: github/skills/mobile-expo-codespaces/references/pipelines/eas-build-submit-update.yml.j2
     target: .github/skills/mobile-expo-codespaces/references/pipelines/eas-build-submit-update.yml.j2
+  - source: github/skills/frontend-project-setup/SKILL.md
+    target: .github/skills/frontend-project-setup/SKILL.md
+  - source: github/skills/frontend-project-setup/templates/package.json.j2
+    target: .github/skills/frontend-project-setup/templates/package.json.j2
