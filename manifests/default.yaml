@@ -18,3 +18,13 @@ files:
     target: .github/skills/frontend-project-setup/SKILL.md
   - source: github/skills/frontend-project-setup/templates/package.json.j2
     target: .github/skills/frontend-project-setup/templates/package.json.j2
+  - source: github/skills/terraform-modules/SKILL.md
+    target: .github/skills/terraform-modules/SKILL.md
+  - source: github/skills/terraform-modules/assets/terraform/gcp/secret_manager/main.tf
+    target: .github/skills/terraform-modules/assets/terraform/gcp/secret_manager/main.tf
+  - source: github/skills/terraform-modules/assets/terraform/gcp/workload_identity/main.tf
+    target: .github/skills/terraform-modules/assets/terraform/gcp/workload_identity/main.tf
+  - source: github/skills/terraform-modules/assets/terraform/github/branch_protection/main.tf
+    target: .github/skills/terraform-modules/assets/terraform/github/branch_protection/main.tf
+  - source: github/skills/terraform-modules/assets/terraform/github/repo_settings/main.tf
+    target: .github/skills/terraform-modules/assets/terraform/github/repo_settings/main.tf
