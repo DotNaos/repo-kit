@@ -54,12 +54,12 @@ Creates a GCP Workload Identity pool for use with GitHub Actions OIDC authentica
 
    ```hcl
    module "repo" {
-     source = ".github/skills/terraform-modules/assets/terraform/github/repo_settings"
+     source = "skills/terraform-modules/assets/terraform/github/repo_settings"
      name   = "my-repo"
    }
 
    module "branch_protection" {
-     source     = ".github/skills/terraform-modules/assets/terraform/github/branch_protection"
+     source     = "skills/terraform-modules/assets/terraform/github/branch_protection"
      repository = module.repo.name
    }
    ```
