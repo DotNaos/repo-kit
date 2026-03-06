@@ -1,0 +1,38 @@
+name: default
+files:
+    - source: github-actions-ci/workflows/ci.yml
+      target: .github/workflows/ci.yml
+    - source: github-codeowners/CODEOWNERS
+      target: .github/CODEOWNERS
+    - source: mobile-expo-codespaces/SKILL.md
+      target: skills/mobile-expo-codespaces/SKILL.md
+    - source: mobile-expo-codespaces/scripts/doctor.sh
+      target: skills/mobile-expo-codespaces/scripts/doctor.sh
+    - source: mobile-expo-codespaces/scripts/start-tunnel.sh
+      target: skills/mobile-expo-codespaces/scripts/start-tunnel.sh
+    - source: mobile-expo-codespaces/references/pipelines/eas-build.yml.j2
+      target: skills/mobile-expo-codespaces/references/pipelines/eas-build.yml.j2
+    - source: mobile-expo-codespaces/references/pipelines/eas-build-submit-update.yml.j2
+      target: skills/mobile-expo-codespaces/references/pipelines/eas-build-submit-update.yml.j2
+    - source: frontend-project-setup/SKILL.md
+      target: skills/frontend-project-setup/SKILL.md
+    - source: frontend-project-setup/templates/package.json.j2
+      target: skills/frontend-project-setup/templates/package.json.j2
+    - source: terraform-modules/SKILL.md
+      target: skills/terraform-modules/SKILL.md
+    - source: terraform-modules/assets/terraform/gcp/secret_manager/main.tf
+      target: skills/terraform-modules/assets/terraform/gcp/secret_manager/main.tf
+    - source: terraform-modules/assets/terraform/gcp/workload_identity/main.tf
+      target: skills/terraform-modules/assets/terraform/gcp/workload_identity/main.tf
+    - source: terraform-modules/assets/terraform/github/branch_protection/main.tf
+      target: skills/terraform-modules/assets/terraform/github/branch_protection/main.tf
+    - source: terraform-modules/assets/terraform/github/repo_settings/main.tf
+      target: skills/terraform-modules/assets/terraform/github/repo_settings/main.tf
+    - source: ci-go-cli/SKILL.md
+      target: skills/ci-go-cli/SKILL.md
+    - source: ci-node-app/SKILL.md
+      target: skills/ci-node-app/SKILL.md
+    - source: docker-build/SKILL.md
+      target: skills/docker-build/SKILL.md
+    - source: release-github/SKILL.md
+      target: skills/release-github/SKILL.md
