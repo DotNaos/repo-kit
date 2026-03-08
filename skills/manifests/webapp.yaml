@@ -6,3 +6,25 @@ files:
       target: .devcontainer/devcontainer.json
     - source: webapp-template/webapp.env.example
       target: .env.example
+    - source: agent-reviewer/reviewer.md
+      target: .github/agents/reviewer.md
+    - source: agent-ready-quality-gates/SKILL.md
+      target: skills/agent-ready-quality-gates/SKILL.md
+    - source: agent-ready-quality-gates/references/js-ts-thresholds.md
+      target: skills/agent-ready-quality-gates/references/js-ts-thresholds.md
+    - source: agent-ready-quality-gates/references/file-header-template.md
+      target: skills/agent-ready-quality-gates/references/file-header-template.md
+    - source: agent-ready-quality-gates/references/eslint-structure-rules.md
+      target: skills/agent-ready-quality-gates/references/eslint-structure-rules.md
+    - source: clean-code-review-refactor/SKILL.md
+      target: skills/clean-code-review-refactor/SKILL.md
+    - source: clean-code-review-refactor/references/before-after-examples.md
+      target: skills/clean-code-review-refactor/references/before-after-examples.md
+    - source: pr-quality-pipeline/SKILL.md
+      target: skills/pr-quality-pipeline/SKILL.md
+    - source: pr-quality-pipeline/references/quality-checklist.md
+      target: skills/pr-quality-pipeline/references/quality-checklist.md
+    - source: pr-quality-pipeline/references/local-gate-layout.md
+      target: skills/pr-quality-pipeline/references/local-gate-layout.md
+    - source: pr-quality-pipeline/templates/pr-quality.yml.j2
+      target: skills/pr-quality-pipeline/templates/pr-quality.yml.j2
