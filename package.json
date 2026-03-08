@@ -1,6 +1,6 @@
 {
     "name": "@dotnaos/project-toolkit",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Project operations toolkit for skills, agent workflows, and repository automation powered by the Codex SDK.",
     "license": "UNLICENSED",
     "type": "module",
