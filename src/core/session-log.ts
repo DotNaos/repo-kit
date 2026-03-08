@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { DEFAULT_LOGS_RELATIVE_DIR } from "./config.js";
 import type {
     ProjectToolkitConfig,
     SessionLog,
@@ -47,7 +48,7 @@ export async function createSessionLog(options: CreateSessionLogOptions): Promis
 function resolveLogsDir(cwd: string, config: ProjectToolkitConfig): string {
   const configuredDir = config.logs?.dir;
   if (!configuredDir) {
-    return path.join(cwd, "logs", "project-toolkit");
+    return path.join(cwd, DEFAULT_LOGS_RELATIVE_DIR);
   }
 
   return path.isAbsolute(configuredDir) ? configuredDir : path.resolve(cwd, configuredDir);

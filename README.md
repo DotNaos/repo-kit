@@ -39,6 +39,7 @@ node dist/cli/index.js skills list
 
 ```bash
 pkit skills list
+pkit project init [--force]
 pkit plan <skill-id>
 pkit run <skill-id>
 pkit dev [--] <command...>
@@ -48,6 +49,7 @@ pkit auth status
 Command behavior in v1:
 
 - `skills list` discovers first-level directories under `skills/` and reports whether each one looks runnable.
+- `project init [--force]` scaffolds `.project-toolkit/config.yaml` plus `.project-toolkit/base.code-workspace` as the starting point for generated workspaces and shared-link config.
 - `plan <skill-id>` loads the selected skill, collects a small repository summary from the current working directory, asks Codex for a read-only plan, and writes a JSONL session log.
 - `run <skill-id>` loads the selected skill, executes it through Codex with minimal adapter wiring for future approval and diff hooks, and writes a JSONL session log.
 - `dev [--] <command...>` runs an explicit local command, or falls back to `.project-toolkit/config.yaml` `dev.command`, while teeing stdout and stderr into a JSONL session log.
@@ -64,11 +66,17 @@ logs:
     dir: logs/project-toolkit
 project:
     name: my-service
+workspace:
+    baseFile: .project-toolkit/base.code-workspace
+shared:
+    - path: .env
 ```
 
 - `dev.command`: default shell command for `pkit dev`
 - `logs.dir`: optional directory override for JSONL session logs
 - `project.name`: optional project label recorded in session metadata
+- `workspace.baseFile`: stable workspace template inside the repo; future workspace generation replaces the active `folders` section from this base file
+- `shared`: flat list of shared gitignored paths for future worktree linking; `source`/`target` default to `path`, while `include`/`exclude` scope entries by worktree name
 
 ## Skill Format
 

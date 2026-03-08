@@ -8,6 +8,7 @@ import { loadProjectToolkitConfig } from "../core/config.js";
 import { runDevWrapper } from "../core/dev-wrapper.js";
 import { ProjectToolkitError } from "../core/errors.js";
 import { getPackageRoot } from "../core/package-root.js";
+import { initializeProjectToolkit } from "../core/project-init.js";
 import { collectRepoContext } from "../core/repo-context.js";
 import { createSessionLog } from "../core/session-log.js";
 import { discoverSkills, loadSkill } from "../core/skills.js";
@@ -46,9 +47,28 @@ async function main(): Promise<void> {
     case "auth":
       await handleAuthCommand(args.slice(1));
       return;
+    case "project":
+      await handleProjectCommand(args.slice(1));
+      return;
     default:
       throw new ProjectToolkitError(`Unknown command: ${args[0]}`);
   }
+}
+
+async function handleProjectCommand(args: string[]): Promise<void> {
+  if (args[0] !== "init") {
+    throw new ProjectToolkitError("Usage: pkit project init [--force]");
+  }
+
+  const extraArgs = args.slice(1);
+  const force = extraArgs.includes("--force");
+  const unsupportedArgs = extraArgs.filter((value) => value !== "--force");
+  if (unsupportedArgs.length > 0) {
+    throw new ProjectToolkitError("Usage: pkit project init [--force]");
+  }
+
+  const result = await initializeProjectToolkit(process.cwd(), force);
+  printProjectInitResult(result, force);
 }
 
 async function handleSkillsCommand(args: string[], skillsRoot: string): Promise<void> {
@@ -295,12 +315,35 @@ function printExecutionFooter(result: PlanExecutionResult | TaskExecutionResult,
 
 function printUsage(): void {
   console.log(`pkit skills list
+pkit project init [--force]
 pkit plan <skill-id>
 pkit run <skill-id>
 pkit dev [--] <command...>
 pkit auth status
 
 Also available as: project-toolkit`);
+}
+
+function printProjectInitResult(
+  result: Awaited<ReturnType<typeof initializeProjectToolkit>>,
+  force: boolean,
+): void {
+  console.log(`Initialized project-toolkit scaffold${force ? " (force mode)" : ""}.`);
+
+  printFileGroup("Created", result.created);
+  printFileGroup("Updated", result.updated);
+  printFileGroup("Skipped", result.skipped);
+}
+
+function printFileGroup(label: string, files: string[]): void {
+  if (files.length === 0) {
+    return;
+  }
+
+  console.log(`${label}:`);
+  for (const file of files) {
+    console.log(`- ${file}`);
+  }
 }
 
 function pad(value: string, width: number): string {

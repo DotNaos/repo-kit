@@ -2,9 +2,12 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { parse as parseYaml } from "yaml";
 import { ProjectToolkitError } from "./errors.js";
-import type { ProjectToolkitConfig } from "./types.js";
+import type { ProjectToolkitConfig, ProjectToolkitSharedLink } from "./types.js";
 
-const CONFIG_RELATIVE_PATH = path.join(".project-toolkit", "config.yaml");
+export const PROJECT_TOOLKIT_DIRNAME = ".project-toolkit";
+export const CONFIG_RELATIVE_PATH = path.join(PROJECT_TOOLKIT_DIRNAME, "config.yaml");
+export const BASE_WORKSPACE_RELATIVE_PATH = path.join(PROJECT_TOOLKIT_DIRNAME, "base.code-workspace");
+export const DEFAULT_LOGS_RELATIVE_DIR = path.join("logs", "project-toolkit");
 
 export async function loadProjectToolkitConfig(cwd: string): Promise<ProjectToolkitConfig> {
   const configPath = path.join(cwd, CONFIG_RELATIVE_PATH);
@@ -42,10 +45,13 @@ function validateConfig(raw: Record<string, unknown>, label: string): ProjectToo
   const dev = readNestedObject(raw, "dev", label);
   const logs = readNestedObject(raw, "logs", label);
   const project = readNestedObject(raw, "project", label);
+  const workspace = readNestedObject(raw, "workspace", label);
 
   const devCommand = readOptionalString(dev, "command", `${label}.dev.command`);
   const logsDir = readOptionalString(logs, "dir", `${label}.logs.dir`);
   const projectName = readOptionalString(project, "name", `${label}.project.name`);
+  const workspaceBaseFile = readOptionalString(workspace, "baseFile", `${label}.workspace.baseFile`);
+  const shared = readSharedLinks(raw, label);
 
   const config: ProjectToolkitConfig = {};
 
@@ -61,7 +67,62 @@ function validateConfig(raw: Record<string, unknown>, label: string): ProjectToo
     config.project = { name: projectName };
   }
 
+  if (workspaceBaseFile) {
+    config.workspace = { baseFile: workspaceBaseFile };
+  }
+
+  if (shared.length > 0) {
+    config.shared = shared;
+  }
+
   return config;
+}
+
+function readSharedLinks(raw: Record<string, unknown>, label: string): ProjectToolkitSharedLink[] {
+  const value = raw.shared;
+  if (value === undefined || value === null) {
+    return [];
+  }
+
+  if (!Array.isArray(value)) {
+    throw new ProjectToolkitError(`${label}.shared must be an array`);
+  }
+
+  return value.map((entry, index) => validateSharedLink(entry, `${label}.shared[${index}]`));
+}
+
+function validateSharedLink(value: unknown, label: string): ProjectToolkitSharedLink {
+  if (!isRecord(value)) {
+    throw new ProjectToolkitError(`${label} must be an object`);
+  }
+
+  const sharedPath = readRequiredString(value, "path", `${label}.path`);
+  const source = readOptionalString(value, "source", `${label}.source`);
+  const target = readOptionalString(value, "target", `${label}.target`);
+  const include = readOptionalStringArray(value, "include", `${label}.include`);
+  const exclude = readOptionalStringArray(value, "exclude", `${label}.exclude`);
+
+  const sharedLink: ProjectToolkitSharedLink = {
+    path: sharedPath,
+  };
+
+  if (source) {
+    sharedLink.source = source;
+  }
+
+  if (target) {
+    sharedLink.target = target;
+  }
+
+  if (include) {
+    sharedLink.include = include;
+  }
+
+  if (exclude) {
+    sharedLink.exclude = exclude;
+  }
+
+  return sharedLink;
 }
 
 function readNestedObject(
@@ -97,6 +158,45 @@ function readOptionalString(
 
   const normalized = value.trim();
   return normalized.length > 0 ? normalized : undefined;
+}
+
+function readRequiredString(raw: Record<string, unknown>, key: string, label: string): string {
+  const value = readOptionalString(raw, key, label);
+  if (!value) {
+    throw new ProjectToolkitError(`${label} must be a non-empty string`);
+  }
+
+  return value;
+}
+
+function readOptionalStringArray(
+  raw: Record<string, unknown>,
+  key: string,
+  label: string,
+): string[] | undefined {
+  if (!(key in raw)) {
+    return undefined;
+  }
+
+  const value = raw[key];
+  if (!Array.isArray(value)) {
+    throw new ProjectToolkitError(`${label} must be an array of strings`);
+  }
+
+  const result = value.map((entry, index) => {
+    if (typeof entry !== "string") {
+      throw new ProjectToolkitError(`${label}[${index}] must be a string`);
+    }
+
+    const normalized = entry.trim();
+    if (!normalized) {
+      throw new ProjectToolkitError(`${label}[${index}] must be a non-empty string`);
+    }
+
+    return normalized;
+  });
+
+  return result.length > 0 ? result : undefined;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

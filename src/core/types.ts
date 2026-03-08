@@ -33,6 +33,18 @@ export interface AuthStatus {
   source: "OPENAI_API_KEY";
 }
 
+export interface ProjectToolkitWorkspaceConfig {
+  baseFile?: string;
+}
+
+export interface ProjectToolkitSharedLink {
+  path: string;
+  source?: string;
+  target?: string;
+  include?: string[];
+  exclude?: string[];
+}
+
 export interface ProjectToolkitConfig {
   dev?: {
     command?: string;
@@ -43,6 +55,8 @@ export interface ProjectToolkitConfig {
   project?: {
     name?: string;
   };
+  workspace?: ProjectToolkitWorkspaceConfig;
+  shared?: ProjectToolkitSharedLink[];
 }
 
 export type JsonPrimitive = boolean | number | string | null;

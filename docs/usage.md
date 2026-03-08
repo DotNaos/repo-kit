@@ -10,6 +10,7 @@
 
 ```bash
 pkit skills list
+pkit project init [--force]
 pkit plan <skill-id>
 pkit run <skill-id>
 pkit dev [--] <command...>
@@ -27,11 +28,24 @@ logs:
     dir: logs/project-toolkit
 project:
     name: my-service
+workspace:
+    baseFile: .project-toolkit/base.code-workspace
+shared:
+    - path: .env
 ```
 
 - `dev.command`: shell command used by `pkit dev` when no explicit command is passed
 - `logs.dir`: directory for JSONL session logs; defaults to `logs/project-toolkit` under the current working directory
 - `project.name`: optional project label recorded in session log metadata
+- `workspace.baseFile`: stable in-repo workspace template used as the source for future generated workspaces
+- `shared`: flat list of shared gitignored paths; `source` and `target` default to `path`, while `include` / `exclude` filter by worktree name
+
+### `pkit project init [--force]`
+
+- Creates `.project-toolkit/config.yaml` when missing
+- Creates `.project-toolkit/base.code-workspace` when missing
+- With `--force`, rewrites both scaffold files
+- Seeds the future worktree/shared-link foundation without requiring manual file creation
 
 ### `pkit skills list`
 
