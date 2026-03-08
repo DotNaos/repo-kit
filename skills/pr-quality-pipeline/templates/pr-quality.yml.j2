@@ -1,0 +1,55 @@
+name: PR Quality
+on:
+  pull_request:
+  push:
+    branches:
+      - {{ default_branch | default('main') }}
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: {{ node_version | default("'20'") }}
+          cache: npm
+      - run: npm ci
+      - run: {{ lint_command | default('npm run lint') }}
+
+  deps:
+    name: dependency-hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: {{ node_version | default("'20'") }}
+          cache: npm
+      - run: npm ci
+      - run: {{ deps_command | default('npm run check:deps') }}
+
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    needs: [lint, deps]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: {{ node_version | default("'20'") }}
+          cache: npm
+      - run: npm ci
+      - run: {{ build_command | default('npm run build') }}
+
+  independent-review:
+    name: independent-review
+    runs-on: ubuntu-latest
+    needs: [lint, deps]
+    steps:
+      - uses: actions/checkout@v4
+      - name: reviewer-placeholder
+        run: |
+          echo "Run the independent clean-code review here."
+          echo "Do not reuse the implementation lane and call it a review."
