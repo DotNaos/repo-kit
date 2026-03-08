@@ -4,13 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-)
 
-const (
-	projectToolkitDirName     = ".project-toolkit"
-	configRelativePath        = ".project-toolkit/config.yaml"
-	baseWorkspaceRelativePath = ".project-toolkit/base.code-workspace"
-	defaultLogsRelativeDir    = "logs/project-toolkit"
+	"github.com/DotNaos/project-toolkit/internal/projectconfig"
 )
 
 type Result struct {
@@ -20,13 +15,13 @@ type Result struct {
 }
 
 func Initialize(cwd string, force bool) (Result, error) {
-	toolkitDir := filepath.Join(cwd, projectToolkitDirName)
-	configPath := filepath.Join(cwd, configRelativePath)
-	baseWorkspacePath := filepath.Join(cwd, baseWorkspaceRelativePath)
+	toolkitDir := filepath.Join(cwd, projectconfig.ProjectToolkitDirName)
+	configPath := filepath.Join(cwd, projectconfig.ConfigRelativePath)
+	baseWorkspacePath := filepath.Join(cwd, projectconfig.BaseWorkspaceRelativePath)
 	projectName := filepath.Base(cwd)
 
 	if err := os.MkdirAll(toolkitDir, 0o755); err != nil {
-		return Result{}, fmt.Errorf("failed to create %s: %w", projectToolkitDirName, err)
+		return Result{}, fmt.Errorf("failed to create %s: %w", projectconfig.ProjectToolkitDirName, err)
 	}
 
 	result := Result{
@@ -94,7 +89,7 @@ shared:
   # source/target default to path when omitted.
   # include/exclude match worktree names.
   - path: .env
-`, projectName, defaultLogsRelativeDir, baseWorkspaceRelativePath)
+`, projectName, projectconfig.DefaultLogsRelativeDir, projectconfig.BaseWorkspaceRelativePath)
 }
 
 func buildBaseWorkspaceTemplate() string {

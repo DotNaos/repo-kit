@@ -6,7 +6,9 @@ import (
 	"os"
 
 	"github.com/DotNaos/project-toolkit/internal/nodebridge"
+	"github.com/DotNaos/project-toolkit/internal/projectconfig"
 	"github.com/DotNaos/project-toolkit/internal/projectinit"
+	"github.com/DotNaos/project-toolkit/internal/workspace"
 	"github.com/spf13/cobra"
 )
 
@@ -106,19 +108,14 @@ func newProjectWorkspaceCommand() *cobra.Command {
 		Use:   "generate",
 		Short: "Generate a workspace file for a target root",
 		Args:  cobra.NoArgs,
-		RunE: func(_ *cobra.Command, _ []string) error {
-			bridgeArgs := []string{"project", "workspace", "generate"}
-			if name != "" {
-				bridgeArgs = append(bridgeArgs, "--name", name)
-			}
-			if root != "" {
-				bridgeArgs = append(bridgeArgs, "--root", root)
-			}
-			if output != "" {
-				bridgeArgs = append(bridgeArgs, "--output", output)
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			result, err := runProjectWorkspaceGenerate(name, root, output)
+			if err != nil {
+				return err
 			}
 
-			return nodebridge.Run(bridgeArgs)
+			printProjectWorkspaceGenerateResult(cmd.OutOrStdout(), result)
+			return nil
 		},
 	}
 
@@ -282,5 +279,53 @@ func printFileGroup(writer io.Writer, label string, files []string) {
 	fmt.Fprintf(writer, "%s:\n", label)
 	for _, file := range files {
 		fmt.Fprintf(writer, "- %s\n", file)
+	}
+}
+
+func runProjectWorkspaceGenerate(name, root, output string) (workspace.GenerateResult, error) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return workspace.GenerateResult{}, fmt.Errorf("failed to resolve working directory: %w", err)
+	}
+
+	config, err := projectconfig.Load(cwd)
+	if err != nil {
+		return workspace.GenerateResult{}, err
+	}
+
+	workspaceName := name
+	if workspaceName == "" {
+		workspaceName = "default"
+	}
+
+	return workspace.Generate(workspace.GenerateOptions{
+		CWD:           cwd,
+		Config:        config,
+		WorkspaceName: workspaceName,
+		OutputPath:    output,
+		TargetRoot:    root,
+	})
+}
+
+func printProjectWorkspaceGenerateResult(writer io.Writer, result workspace.GenerateResult) {
+	fmt.Fprintf(writer, "Generated workspace: %s\n", result.OutputPath)
+	fmt.Fprintf(writer, "Project key: %s\n", result.ProjectKey)
+	fmt.Fprintf(writer, "Workspace name: %s\n", result.WorkspaceName)
+	fmt.Fprintf(writer, "Workspace root: %s\n", result.TargetRoot)
+	fmt.Fprintf(writer, "Base workspace: %s\n", result.BaseWorkspacePath)
+	fmt.Fprintf(writer, "Folder entry: %s\n", result.FolderPath)
+
+	if len(result.SharedLinks) == 0 {
+		return
+	}
+
+	fmt.Fprintln(writer, "Shared links:")
+	for _, sharedLink := range result.SharedLinks {
+		reason := ""
+		if sharedLink.Reason != "" {
+			reason = fmt.Sprintf(" (%s)", sharedLink.Reason)
+		}
+
+		fmt.Fprintf(writer, "- [%s] %s -> %s%s\n", sharedLink.Status, sharedLink.Path, sharedLink.TargetPath, reason)
 	}
 }
