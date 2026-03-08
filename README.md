@@ -1,8 +1,13 @@
 # project-toolkit
 
-`project-toolkit` is a Node.js / TypeScript CLI for project operations, repository skills, and agent workflows through the official Codex SDK.
+`project-toolkit` is moving to a hybrid CLI architecture:
 
-v1 intentionally supports one backend only:
+- Go + Cobra for the main product CLI, install/update ergonomics, shell completions, and system-facing workflows
+- TypeScript for the isolated Codex-backed agent adapter during the migration
+
+The current repository still contains the original TypeScript implementation, and the new Go CLI front-end forwards to it where native Go ports have not landed yet.
+
+The current agent backend intentionally supports one provider path only:
 
 - Codex via `@openai/codex-sdk`
 - API key authentication via `OPENAI_API_KEY`
@@ -33,7 +38,13 @@ Use a GitHub token that can read packages for installation. The checked-in `.npm
 npm install
 npm run build
 node dist/cli/index.js skills list
+go run ./cmd/pkit --help
 ```
+
+The hybrid transition keeps both entrypoints available during migration:
+
+- `node dist/cli/index.js ...` — existing TypeScript implementation
+- `go run ./cmd/pkit ...` — new Go/Cobra frontend with a bridge back to TypeScript
 
 ## CLI Usage
 
@@ -42,6 +53,7 @@ pkit skills list
 pkit project init [--force]
 pkit project workspace generate [--name <workspace>] [--root <dir>] [--output <file>]
 pkit project worktree create <name> [--branch <branch>] [--base <ref>] [--workspace <workspace>] [--output <file>]
+pkit completion zsh
 pkit plan <skill-id>
 pkit run <skill-id>
 pkit dev [--] <command...>
@@ -54,6 +66,7 @@ Command behavior in v1:
 - `project init [--force]` scaffolds `.project-toolkit/config.yaml` plus `.project-toolkit/base.code-workspace` as the starting point for generated workspaces and shared-link config.
 - `project workspace generate ...` loads the base workspace file, replaces its `folders` section for the chosen root, writes the generated `.code-workspace` file outside the repo by default, and applies matching shared-file symlinks.
 - `project worktree create ...` creates a managed Git worktree under the toolkit state directory, creates or reuses a branch, and generates a matching workspace file for that worktree.
+- `completion zsh` prints a Zsh completion script for `pkit` and `project-toolkit`.
 - `plan <skill-id>` loads the selected skill, collects a small repository summary from the current working directory, asks Codex for a read-only plan, and writes a JSONL session log.
 - `run <skill-id>` loads the selected skill, executes it through Codex with minimal adapter wiring for future approval and diff hooks, and writes a JSONL session log.
 - `dev [--] <command...>` runs an explicit local command, or falls back to `.project-toolkit/config.yaml` `dev.command`, while teeing stdout and stderr into a JSONL session log.
@@ -149,9 +162,12 @@ npm publish --dry-run
 
 ## Project Layout
 
-- `src/cli/`: CLI entrypoint and output formatting
-- `src/core/`: skill loading, auth checks, repo context collection, shared types
-- `src/adapters/codex-sdk/`: Codex SDK adapter
+- `cmd/pkit/`: new Go entrypoint for the hybrid CLI
+- `internal/cli/`: Cobra command tree and command wiring
+- `internal/nodebridge/`: temporary bridge into the TypeScript implementation during migration
+- `src/cli/`: current TypeScript CLI implementation
+- `src/core/`: current TypeScript project/workspace/worktree logic
+- `src/adapters/codex-sdk/`: isolated TypeScript Codex adapter target for the long-term hybrid split
 - `skills/`: bundled skill catalog
 - `docs/`: usage and architecture notes
 

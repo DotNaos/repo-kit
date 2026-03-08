@@ -4,6 +4,7 @@ import path from "node:path";
 import process from "node:process";
 import { CodexSdkAdapter } from "../adapters/codex-sdk/adapter.js";
 import { getAuthStatus } from "../core/auth.js";
+import { renderZshCompletion } from "../core/completion.js";
 import { loadProjectToolkitConfig } from "../core/config.js";
 import { runDevWrapper } from "../core/dev-wrapper.js";
 import { ProjectToolkitError } from "../core/errors.js";
@@ -48,6 +49,9 @@ async function main(): Promise<void> {
       return;
     case "auth":
       await handleAuthCommand(args.slice(1));
+      return;
+    case "completion":
+      handleCompletionCommand(args.slice(1));
       return;
     case "project":
       await handleProjectCommand(args.slice(1));
@@ -378,6 +382,14 @@ async function handleAuthCommand(args: string[]): Promise<void> {
   );
 }
 
+function handleCompletionCommand(args: string[]): void {
+  if (args.length !== 1 || args[0] !== "zsh") {
+    throw new ProjectToolkitError("Usage: pkit completion zsh");
+  }
+
+  process.stdout.write(renderZshCompletion());
+}
+
 function printSkillSummaries(skills: SkillSummary[]): void {
   if (skills.length === 0) {
     console.log("No skills found.");
@@ -484,6 +496,7 @@ function printUsage(): void {
 pkit project init [--force]
 pkit project workspace generate [--name <workspace>] [--root <dir>] [--output <file>]
 pkit project worktree create <name> [--branch <branch>] [--base <ref>] [--workspace <workspace>] [--output <file>]
+pkit completion zsh
 pkit plan <skill-id>
 pkit run <skill-id>
 pkit dev [--] <command...>

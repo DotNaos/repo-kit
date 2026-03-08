@@ -13,6 +13,7 @@ pkit skills list
 pkit project init [--force]
 pkit project workspace generate [--name <workspace>] [--root <dir>] [--output <file>]
 pkit project worktree create <name> [--branch <branch>] [--base <ref>] [--workspace <workspace>] [--output <file>]
+pkit completion zsh
 pkit plan <skill-id>
 pkit run <skill-id>
 pkit dev [--] <command...>
@@ -64,6 +65,12 @@ shared:
 - Uses `--base <ref>` for new branches, defaulting to the repository's current `HEAD`
 - Generates a matching workspace file and applies shared-file links into the new worktree
 - Keeps the main repository as the shared-file source in v1
+
+### `pkit completion zsh`
+
+- Prints a Zsh completion script for both `pkit` and `project-toolkit`
+- Intended to be written to a completion file such as `~/.zsh/completions/_pkit`
+- Supports top-level commands plus the current `project` subcommands and options
 
 ### `pkit skills list`
 
