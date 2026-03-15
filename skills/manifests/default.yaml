@@ -38,6 +38,8 @@ files:
       target: skills/docker-build/SKILL.md
     - source: release-github/SKILL.md
       target: skills/release-github/SKILL.md
+    - source: repo-branch-protection/SKILL.md
+      target: skills/repo-branch-protection/SKILL.md
     - source: project-env-secrets/SKILL.md
       target: skills/project-env-secrets/SKILL.md
     - source: project-env-secrets/references/runtime-patterns.md

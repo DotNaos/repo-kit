@@ -30,9 +30,10 @@ Creates or configures a GitHub repository with standard defaults:
 Enforces branch protection on a repository branch:
 
 - Requires at least 1 approving PR review
+- Enforces the rule for repository admins by default
 - Configurable branch pattern (default: `main`)
 
-**Variables**: `repository` (string), `pattern` (string, default `"main"`)
+**Variables**: `repository` (string), `pattern` (string, default `"main"`), `enforce_admins` (bool, default `true`)
 
 ### `assets/terraform/gcp/secret_manager`
 
@@ -58,11 +59,20 @@ Creates a GCP Workload Identity pool for use with GitHub Actions OIDC authentica
      name   = "my-repo"
    }
 
-   module "branch_protection" {
+   module "main_branch_protection" {
      source     = "skills/terraform-modules/assets/terraform/github/branch_protection"
      repository = module.repo.name
+     pattern    = "main"
+   }
+
+   module "dev_branch_protection" {
+     source     = "skills/terraform-modules/assets/terraform/github/branch_protection"
+     repository = module.repo.name
+     pattern    = "dev"
    }
    ```
+
+   This baseline protects both `main` and `dev` against direct pushes, including pushes from repository admins.
 
 3. Initialize and apply:
 

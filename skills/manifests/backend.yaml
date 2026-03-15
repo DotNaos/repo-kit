@@ -6,3 +6,5 @@ files:
       target: .env.example
     - source: agent-reviewer/reviewer.md
       target: .github/agents/reviewer.md
+    - source: repo-branch-protection/SKILL.md
+      target: skills/repo-branch-protection/SKILL.md

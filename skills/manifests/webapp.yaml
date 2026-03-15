@@ -28,3 +28,5 @@ files:
       target: skills/pr-quality-pipeline/references/local-gate-layout.md
     - source: pr-quality-pipeline/templates/pr-quality.yml.j2
       target: skills/pr-quality-pipeline/templates/pr-quality.yml.j2
+    - source: repo-branch-protection/SKILL.md
+      target: skills/repo-branch-protection/SKILL.md
